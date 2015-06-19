@@ -71,8 +71,9 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 		eTreated <- eTreated + lambda[j]*G[j]*cM
 	}
 
-    variables <- data.frame(a=a, b=b, B=B, G=G)
+    variables <<- data.frame(a=a, b=b, B=B, G=G)
     print(variables)
+
 
 	return(eTreated)
 }
@@ -83,16 +84,32 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 ##queueModelsClass <- .jnew("QueueModels")
 
 ## beta values from ages 0 to M (10 years)
-## beta <- c(0.03151058, 0.2264334, 0.8135697, 1.8652304, 2.6427220, 2.9153079, 2.9816359, 2.9961008, 2.9991759, 2.9998260, 2.9999633)
-beta <- c(rep(0, 5), rep(1, 6))
+beta <- c(0.03151058, 0.2264334, 0.8135697, 1.8652304, 2.6427220, 2.9153079, 2.9816359, 2.9961008, 2.9991759, 2.9998260, 2.9999633, 2.9999922, 2.9999984,
+          2.9999997, 2.9999999, 3.0000000, 3.0000000, 3.0000000, 3.0000000, 3.0000000, 3.0000000)
+##beta <- c(rep(0, 5), rep(1, 6))
 
 ## need to reassess these values but the code appears to be working!
 alpha <- 150
 c <- 0.70
 p <- 0.20
-mu <- 60
+mu <- 0.000050
 
 ## expectedTreated1 <- single.server(beta=beta, alpha=alpha, c=c, p=p, mu=mu, javaClass=queueModelsClass)
 expectedTreated2 <- single.server.r(beta=beta, alpha=alpha, c=c, p=p, mu=mu)
 ## print(expectedTreated1)
 print(expectedTreated2)
+
+##Plot output of a versus b, B, G
+# Install and call ggplot2
+install.packages("ggplot2")
+library(ggplot2)
+
+## Plot output of a versus b 
+variables.plot <- data.frame(a=a, b=b)
+ggplot(variables.plot, aes(a,b)) + layer(geom="line")
+
+## Plot output of a versus B 
+variables.plot2 <- data.frame(a=a, B=B)
+# remove points to adjust graphs if necessary 
+variables.plot2[c(1:5, 6:11), c(1,2)]
+ggplot(variables.plot2[c(1:5, 6:11), c(1,2)], aes(a,B)) + layer(geom="line")
