@@ -101,15 +101,28 @@ print(expectedTreated2)
 
 ##Plot output of a versus b, B, G
 # Install and call ggplot2
-install.packages("ggplot2")
+# install.packages("ggplot2")
 library(ggplot2)
+library(grid)
+source("http://peterhaschke.com/Code/multiplot.R")
 
-## Plot output of a versus b 
-variables.plot <- data.frame(a=a, b=b)
-ggplot(variables.plot, aes(a,b)) + layer(geom="line")
+## renames and set dataframe variable
+variables.plot <- variables 
+
+## Plot output of a versus b
+P1 <- ggplot(variables.plot, aes(a, y = b, color = variable)) + geom_line(aes(y = b, col = "b"), 
+            colour = "deepskyblue3") 
 
 ## Plot output of a versus B 
-variables.plot2 <- data.frame(a=a, B=B)
-# remove points to adjust graphs if necessary 
-variables.plot2[c(1:5, 6:11), c(1,2)]
-ggplot(variables.plot2[c(1:5, 6:11), c(1,2)], aes(a,B)) + layer(geom="line")
+P2 <- ggplot(variables.plot, aes(a, y = B, color = variable)) + geom_line(aes(y = B, col = "B"),
+            colour = "forestgreen")
+
+## Plot output of a versus G
+P3 <- ggplot(variables.plot, aes(a, y = G, color = variable)) + geom_line(aes(y = G, col = "G"),
+            colour = "tomato3")
+
+## Plot output of graphes onto one page
+multiplot(P1, P2, P3, cols= 1)
+
+
+
