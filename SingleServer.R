@@ -1,8 +1,5 @@
-## other code
-## single.server <- function(beta, a = 0:(length(beta)-1), alpha, c, p, mu, javaClass) {
-##    treatedStats <- .jcall(javaClass,"[D","singleServer",.jarray(as.numeric(a)),.jarray(as.numeric(beta)), as.numeric(alpha), as.numeric(c), as.numeric(p), as.numeric(mu))
-##    return(treatedStats)
-## }
+## Brill's algorithm for a single server queue with a composite arrival stream
+## Based on Algorithm writeup MTR 09/29/2014
 
 ## model parameters
 ## beta - vector of size M containing redispersion rates for each age levels
@@ -13,6 +10,8 @@
 ## mu - service rate
 single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 	## initialization
+  ## alphaPrime = residual (external) arrival rate
+  ## lambda = vector of combined arrival rates (external + redispersion rate)
 	alphaPrime <- alpha*(1-c)*p
 	M <- length(beta)
 	lambda <- beta + alphaPrime
@@ -21,7 +20,7 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 	## note in R, the 1st index is the 0th index given by Brill's notation
 	a[1] <- 0
 
-	## initialize ending values of b, B, and M
+	## Step [1]: initialize ending values of b, B, and M
 	b <- rep(0, length(beta))
 	b[M] <- 1
 
@@ -31,7 +30,7 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 	G <- rep(0, length(beta))
 	G[M] <- exp(-(mu-lambda[M])*a[M])/(mu-lambda[M])
 
-	## recurrence loop
+	## Step [2]: recurrence loop
 	for(j in (M-1):1) {
 
 		b[j] <- -mu*(lambda[j+1]-lambda[j])/(lambda[j+1]-lambda[j]+mu)*exp((lambda[j+1]-lambda[j]+mu)*a[j+1])*B[j+1]
@@ -56,7 +55,7 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 		}
 	}
 
-	## calculating the expected value
+	## Step [3]: calculating the normalization constant
 	cMInverse <- 0
 
 	for(j in 1:M) {
@@ -75,29 +74,42 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
     print(variables)
 
 
-	return(eTreated)
+	return(expTreated)
 }
 
-## initialize the java QueueModels framework
-## library("rJava")
-## .jinit(".")
-##queueModelsClass <- .jnew("QueueModels")
+## Provide input to program:
 
+## beta values from ages 0 to M; 
+## note index in program runs 1 to M, where M=length(beta)
+## our first example: 10 years; M=11
+beta <- c(0.03151058, 0.2264334, 0.8135697, 1.8652304, 2.6427220, 2.9153079, 2.9816359, 2.9961008, 2.9991759, 2.9998260, 2.9999633)
 ## beta values from ages 0 to M (10 years)
-beta <- c(0.03151058, 0.2264334, 0.8135697, 1.8652304, 2.6427220, 2.9153079, 2.9816359, 2.9961008, 2.9991759, 2.9998260, 2.9999633, 2.9999922, 2.9999984,
+## beta <- c(0.03151058, 0.2264334, 0.8135697, 1.8652304, 2.6427220, 2.9153079, 2.9816359, 2.9961008, 2.9991759, 2.9998260, 2.9999633, 2.9999922, 2.9999984,
           2.9999997, 2.9999999, 3.0000000, 3.0000000, 3.0000000, 3.0000000, 3.0000000, 3.0000000)
 ##beta <- c(rep(0, 5), rep(1, 6))
 
-## need to reassess these values but the code appears to be working!
 alpha <- 150
-c <- 0.70
+##c <- 0.10
 p <- 0.20
-mu <- 0.000050
+mu <- 20
 
-## expectedTreated1 <- single.server(beta=beta, alpha=alpha, c=c, p=p, mu=mu, javaClass=queueModelsClass)
-expectedTreated2 <- single.server.r(beta=beta, alpha=alpha, c=c, p=p, mu=mu)
-## print(expectedTreated1)
-print(expectedTreated2)
+d<-(1:9)
+d<- d*0.1
+print(d)
+result<-c()
+for (j in 1:9)
+{
+  
+  expectedTreated2 <- ActualRate(beta=beta, alpha=alpha, c=d[j], p=p, mu=mu)
+  
+  result<-c(result, expectedTreated2)
+  
+}
+print(result)
+
+variable.result <- data.frame(c=d, result)
+plot(variable.result)
+
 
 ##Plot output of a versus b, B, G
 # Install and call ggplot2
@@ -123,6 +135,3 @@ P3 <- ggplot(variables.plot, aes(a, y = G, color = variable)) + geom_line(aes(y 
 
 ## Plot output of graphes onto one page
 multiplot(P1, P2, P3, cols= 1)
-
-
-
