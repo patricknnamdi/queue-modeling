@@ -8,7 +8,7 @@
 ## c - participation rate
 ## p - prevalence of infection
 ## mu - service rate
-single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
+ActualRate <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 	## initialization
   ## alphaPrime = residual (external) arrival rate
   ## lambda = vector of combined arrival rates (external + redispersion rate)
@@ -64,10 +64,10 @@ single.server.r <- function(beta, a=0:(length(beta)-1), alpha, c, p, mu) {
 
 
 	cM <- 1/cMInverse
-	eTreated <- 0
+	expTreated <- 0
 
 	for(j in 1:M) {
-		eTreated <- eTreated + lambda[j]*G[j]*cM
+		expTreated <- expTreated + lambda[j]*G[j]*cM
 	}
 
     variables <<- data.frame(a=a, b=b, B=B, G=G)
@@ -111,7 +111,7 @@ variable.result <- data.frame(c=d, result)
 plot(variable.result)
 
 
-##Plot output of a versus b, B, G
+##Plot output of a versus b, B, G when using constant rates of p, mu, c, alpha
 # Install and call ggplot2
 # install.packages("ggplot2")
 library(ggplot2)
