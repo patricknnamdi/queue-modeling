@@ -107,8 +107,19 @@ for (j in 1:9)
 }
 print(result)
 
-variable.result <- data.frame(c=d, result)
-plot(variable.result)
+## Plot of expected number of houses per year as function of participation rate, c
+variable.participation <- data.frame(c=d, result)
+plot(variable.participation)
+title("Participation Rate vs. Expected Number of Houses 
+      per year")
+
+## Plot of expected number of houses per year as function of service rate, mu
+variable.service <- data.frame(mu, result)
+plot(variable.service)
+title("Service Rate vs. Expected Number of Houses 
+      per year")
+
+
 
 
 ##Plot output of a versus b, B, G when using constant rates of p, mu, c, alpha
