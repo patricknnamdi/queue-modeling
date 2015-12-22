@@ -11,6 +11,7 @@ rociado <- rociado[, c("UNICODE", "SITUACION", "DIA", "MES", "ANIO", "IN_TCAP_TO
 colnames(inspecciones)[1] <- "UNICODE"
 dataset <- merge(inspecciones, rociado, by = "UNICODE", all = TRUE)
 
+#
 
 ## Sum contents of IN_TCAP_TOT and PD_TCAP_TOT and replace NA with zeros 
 inspecciones$IN_TCAP_TOT <- ifelse(is.na(inspecciones$IN_TCAP_TOT), 0, inspecciones$IN_TCAP_TOT)
@@ -18,14 +19,14 @@ inspecciones$PD_TCAP_TOT <- ifelse(is.na(inspecciones$PD_TCAP_TOT), 0, inspeccio
 inspecciones$sumTotal <- inspecciones$IN_TCAP_TOT + inspecciones$PD_TCAP_TOT
 inspecciones$sumTotal <- ifelse(is.na(inspecciones$sumTotal), 0, inspecciones$sumTotal)
 
-
 ## replace $Situacion with only positive contents (sumtotal > 0)
 indPos <- inspecciones[which(inspecciones$sumTotal != 0), ]
 
-indPos <- indPos[which(indPos$ANIO >= 2011),]
+indPos <- indPos[which(indPos$ANIO >= 2012),]
 
 ## function for total number of P1 or P2 for given denuncia no 
-denunNo <- indPos$NRO_DENUNCIA[indPos$SITUACION == "D"]
+inspecciones.date <- inspecciones[which(inspecciones$ANIO >= 2012),]
+denunNo <- inspecciones.date$NRO_DENUNCIA[inspecciones.date$SITUACION == "D"]
 
 ## dNo is an int, while pValue is a string 
 count <- function(dNo, pValue) {
