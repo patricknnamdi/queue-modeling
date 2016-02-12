@@ -2,7 +2,7 @@
 ## dataset: inspecciones.csv and rociado.csv 
 
 inspecciones <- data.frame(read.csv("/Users/patrickemedom/Desktop/denuncia/inspecciones - INSPECCIONES.csv"))
-inspecciones <- inspecciones[, c("UNICODE.", "SITUACION","NRO_DENUNCIA","DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT")]
+inspecciones <- inspecciones[, c("UNICODE.", "SITUACION","NRO_DENUNCIA","DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT", "INSP_COMPLETA")]
 rociado <- data.frame(read.csv("/Users/patrickemedom/Desktop/denuncia/rociado - ROCIADO.csv"))
 rociado <- rociado[, c("UNICODE", "SITUACION", "DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT")]
 
@@ -11,9 +11,8 @@ rociado <- rociado[, c("UNICODE", "SITUACION", "DIA", "MES", "ANIO", "IN_TCAP_TO
 colnames(inspecciones)[1] <- "UNICODE"
 dataset <- merge(inspecciones, rociado, by = "UNICODE", all = TRUE)
 
-#
-
-## Sum contents of IN_TCAP_TOT and PD_TCAP_TOT and replace NA with zeros 
+## Sum contents of IN_TCAP_TOT and PD_TCAP_TOT and INSP_COMPLETA and replace NA with zeros 
+inspecciones$INSP_COMPLETA <- ifelse(is.na(inspecciones$INSP_COMPLETA), 0, inspecciones$INSP_COMPLETA)
 inspecciones$IN_TCAP_TOT <- ifelse(is.na(inspecciones$IN_TCAP_TOT), 0, inspecciones$IN_TCAP_TOT)
 inspecciones$PD_TCAP_TOT <- ifelse(is.na(inspecciones$PD_TCAP_TOT), 0, inspecciones$PD_TCAP_TOT)
 inspecciones$sumTotal <- inspecciones$IN_TCAP_TOT + inspecciones$PD_TCAP_TOT
@@ -29,16 +28,35 @@ inspecciones.date <- inspecciones[which(inspecciones$ANIO >= 2012),]
 denunNo <- inspecciones.date$NRO_DENUNCIA[inspecciones.date$SITUACION == "D"]
 
 ## dNo is an int, while pValue is a string 
-count <- function(dNo, pValue) {
+## TODO: take in  a data base as a function 
+countPValue <- function(dNo, pValue) {
   indDeNun <- indPos[which(indPos$NRO_DENUNCIA == dNo),]
   sum <- sum(indDeNun$SITUACION == pValue)
   return(sum)
 }
 
+##########################################
+##########################################
+          # insp_completa  #
+#all house houses that had an inspection##
+##########################################
+insp_completa <- inspecciones.date$INSP_COMPLETA[inspecciones.date$NRO_DENUNCIA[inspecciones.date$SITUACION == "D"]]
 
-## loop through count function to create table of P1 and P2 per denunNo
-valTable <- c()
-for (i in denunNo) {
-    valTable <- rbind(valTable, c(i, count(i, "P1"), count(i, "P2")))
-    colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2")
+## function to count inspCompleta for each postive denuncia 
+countCompleta <- function(dNo, inspCompleta) {
+  indDeNun <- indPos[which(indPos$NRO_DENUNCIA == dNo),]
+  sum <- sum(indDeNun$INSP_COMPLETA == inspCompleta)
+  return(sum)
 }
+
+## loop through count function to create table of P1 and P2 per denunNo including inspCompleta
+valTable <- c()
+for (i in denunNo) { 
+  valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), countCompleta(i, "1")))
+  colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "INSP_COMPLETA")
+}
+
+valTable.df <- as.data.frame(valTable)
+valTable.df.2 <- data.frame(valTable)
+##histogram 
+hist(valTable.df$P1)
