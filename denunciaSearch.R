@@ -1,9 +1,9 @@
 ## This program finds the P1 and P2 for a given denuncia 
 ## dataset: inspecciones.csv and rociado.csv 
 
-inspecciones <- data.frame(read.csv("/Users/patrickemedom/Desktop/denuncia/inspecciones - INSPECCIONES.csv"))
+inspecciones <- data.frame(read.csv("/Users/patrickemedom/Desktop/Levy_lab/denuncia/inspecciones - INSPECCIONES.csv"))
 inspecciones <- inspecciones[, c("UNICODE.", "SITUACION","NRO_DENUNCIA","DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT", "INSP_COMPLETA")]
-rociado <- data.frame(read.csv("/Users/patrickemedom/Desktop/denuncia/rociado - ROCIADO.csv"))
+rociado <- data.frame(read.csv("/Users/patrickemedom/Desktop/Levy_lab/denuncia/rociado - ROCIADO.csv"))
 rociado <- rociado[, c("UNICODE", "SITUACION", "DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT")]
 
 
@@ -38,7 +38,7 @@ countPValue <- function(dNo, pValue) {
 ##########################################
 ##########################################
           # insp_completa  #
-#all house houses that had an inspection##
+ ##all houses that had an inspection##
 ##########################################
 insp_completa <- inspecciones.date$INSP_COMPLETA[inspecciones.date$NRO_DENUNCIA[inspecciones.date$SITUACION == "D"]]
 
@@ -49,12 +49,22 @@ countCompleta <- function(dNo, inspCompleta) {
   return(sum)
 }
 
+##########################################
+##########################################
+          # sumTotal #
+    ##Initial Age of infestation ##
+##########################################
+countTotalBugs <- function(dNo) {
+  indDeNun <- indPos[which(indPos$NRO_DENUNCIA == dNo),]
+  return(indDeNun$sumTotal)
+}
+
 ## loop through count function to create table of P1 and P2 per denunNo including inspCompleta
 valTable <- c()
 for (i in denunNo) { 
-  valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), countCompleta(i, "1")))
-  colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "INSP_COMPLETA")
+  valTable <- rbind(valTable, c(i, countTotalBugs(i), countPValue(i, "P1"), countPValue(i, "P2"), countCompleta(i, "1")))
 }
+colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "INSP_COMPLETA")
 
 valTable.df <- as.data.frame(valTable)
 valTable.df.2 <- data.frame(valTable)
