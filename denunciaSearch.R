@@ -1,15 +1,10 @@
 ## This program finds the P1 and P2 for a given denuncia 
 ## dataset: inspecciones.csv and rociado.csv 
 
-inspecciones <- data.frame(read.csv("/Users/patrickemedom/Desktop/Levy_lab/denuncia/inspecciones - INSPECCIONES.csv"))
+## setwd
+setwd("/Users/patrickemedom/Desktop/Levy_lab/denuncia/")
+inspecciones <- data.frame(read.csv("inspecciones - INSPECCIONES.csv"))
 inspecciones <- inspecciones[, c("UNICODE.", "SITUACION","NRO_DENUNCIA","DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT", "INSP_COMPLETA")]
-rociado <- data.frame(read.csv("/Users/patrickemedom/Desktop/Levy_lab/denuncia/rociado - ROCIADO.csv"))
-rociado <- rociado[, c("UNICODE", "SITUACION", "DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT")]
-
-
-## merge datasets 
-colnames(inspecciones)[1] <- "UNICODE"
-dataset <- merge(inspecciones, rociado, by = "UNICODE", all = TRUE)
 
 ## Sum contents of IN_TCAP_TOT and PD_TCAP_TOT and INSP_COMPLETA and replace NA with zeros 
 inspecciones$INSP_COMPLETA <- ifelse(is.na(inspecciones$INSP_COMPLETA), 0, inspecciones$INSP_COMPLETA)
@@ -21,21 +16,23 @@ inspecciones$sumTotal <- ifelse(is.na(inspecciones$sumTotal), 0, inspecciones$su
 ## replace $Situacion with only positive contents (sumtotal > 0)
 indPos <- inspecciones[which(inspecciones$sumTotal != 0), ]
 
+## Take starting at 2012 when P1 and P2 was utilized
 indPos <- indPos[which(indPos$ANIO >= 2012),]
 
 ## function for total number of P1 or P2 for given denuncia no 
 inspecciones.date <- inspecciones[which(inspecciones$ANIO >= 2012),]
-denunNo <- inspecciones.date$NRO_DENUNCIA[inspecciones.date$SITUACION == "D"]
+
+## Get positive denuncias 
+denunNo <- indPos$NRO_DENUNCIA[indPos$SITUACION == "D"]
 
 ## dNo is an int, while pValue is a string 
 ## TODO: take in  a data base as a function 
 countPValue <- function(dNo, pValue) {
-  indDeNun <- indPos[which(indPos$NRO_DENUNCIA == dNo),]
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
   sum <- sum(indDeNun$SITUACION == pValue)
   return(sum)
 }
 
-##########################################
 ##########################################
           # insp_completa  #
  ##all houses that had an inspection##
@@ -44,18 +41,17 @@ insp_completa <- inspecciones.date$INSP_COMPLETA[inspecciones.date$NRO_DENUNCIA[
 
 ## function to count inspCompleta for each postive denuncia 
 countCompleta <- function(dNo, inspCompleta) {
-  indDeNun <- indPos[which(indPos$NRO_DENUNCIA == dNo),]
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
   sum <- sum(indDeNun$INSP_COMPLETA == inspCompleta)
   return(sum)
 }
 
 ##########################################
-##########################################
           # sumTotal #
     ##Initial Age of infestation ##
 ##########################################
 countTotalBugs <- function(dNo) {
-  indDeNun <- indPos[which(indPos$NRO_DENUNCIA == dNo),]
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
   return(indDeNun$sumTotal)
 }
 
