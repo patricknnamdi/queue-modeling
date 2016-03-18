@@ -2,7 +2,7 @@
 ## dataset: inspecciones.csv and rociado.csv 
 
 #set directory
-#setwd("~/Documents/queue-modeling/")    #for Mike
+#setwd("~/queue-modeling/")    #for Mike
 setwd("/Users/patrickemedom/Desktop/denuncia/")   #for Patrick
 
 inspecciones <- data.frame(read.csv("inspecciones - INSPECCIONES.csv"))
@@ -75,17 +75,6 @@ countCompleta <- function(dNo, inspCompleta) {
 }
 
 ##########################################
-          # sumTotal #
-    ##Initial Age of infestation ##
-##########################################
-countTotalBugs <- function(dNo) {
-  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
-  denun <- indDeNun[which(indDeNun$SITUACION == "D"),]
-  sum <- sum(denun$sumTotal)
-  return(sum)
-}
-
-##########################################
       # Total Sum - countAllBugs #
  # Max between D P1 P2 - countMaxBugs #
 ##########################################
@@ -97,10 +86,10 @@ countAllBugs <- function(dNo) {
 
 countMaxBugs <- function(dNo) {
   indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
-  indDeNunMax <- colMax(indDeNun)
-  return(sum)
+  indDeNunMax <- which.max(indDeNun$sumTotal)
+  max <- indDeNun$sumTotal[indDeNunMax]
+  return(max)
 }
-
 
 ##########################################
           # Date of Dununcia # 
@@ -126,7 +115,7 @@ denunciaDate <- function(dNo, type) {
 valTable <- c()
 for (i in denunNo) { 
   valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), 
-                                countTotalBugs(i), denunciaDate(i, "DIA"),
+                                countAllBugs(i), denunciaDate(i, "DIA"),
                                 denunciaDate(i, "MES"), denunciaDate(i, "ANIO")))
 }
 
