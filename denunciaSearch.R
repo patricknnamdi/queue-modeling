@@ -19,14 +19,18 @@ indPos <- inspecciones[which(inspecciones$sumTotal != 0), ]
 ## Take starting at 2012 when P1 and P2 was utilized
 indPos <- indPos[which(indPos$ANIO >= 2012),]
 
-## function for total number of P1 or P2 for given denuncia no 
+## Subset larger dataset for when P1 and P2 notation was used
 inspecciones.date <- inspecciones[which(inspecciones$ANIO >= 2012),]
 
-## Get positive denuncias 
+## Get positive denuncias where sumTotal != 0
 denunNo <- indPos$NRO_DENUNCIA[indPos$SITUACION == "D"]
 
+#############################################
+          # countPValue # 
 ## dNo is an int, while pValue is a string 
+## Returns number of P1s or P2s for given dNo
 ## TODO: take in  a data base as a function 
+#############################################
 countPValue <- function(dNo, pValue) {
   indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
   sum <- sum(indDeNun$SITUACION == pValue)
@@ -52,17 +56,15 @@ countCompleta <- function(dNo, inspCompleta) {
 ##########################################
 countTotalBugs <- function(dNo) {
   indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
-  return(indDeNun$sumTotal)
+  denun <- indDeNun[which(indDeNun$SITUACION == "D"),]
+  sum <- sum(denun$sumTotal)
+  return(sum)
 }
 
 ## loop through count function to create table of P1 and P2 per denunNo including inspCompleta
 valTable <- c()
 for (i in denunNo) { 
-  valTable <- rbind(valTable, c(i, countTotalBugs(i), countPValue(i, "P1"), countPValue(i, "P2"), countCompleta(i, "1")))
+  valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), countTotalBugs(i)))
 }
-colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "INSP_COMPLETA")
+colnames(valTable) <- c("NRO_DENUNCIA", "Total Bug Count", "P1", "P2")
 
-valTable.df <- as.data.frame(valTable)
-valTable.df.2 <- data.frame(valTable)
-##histogram 
-hist(valTable.df$P1)
