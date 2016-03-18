@@ -34,7 +34,18 @@ denunNo <- indPos$NRO_DENUNCIA[indPos$SITUACION == "D"]
 countPValue <- function(dNo, pValue) {
   indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
   sum <- sum(indDeNun$SITUACION == pValue)
-  return(sum)
+  sum1 <- 0
+  sum2 <- 0
+  
+  # Account to for mispelling of P1 and P2 
+  if (pValue == "P1") {
+    sum1 <- sum1 + sum(indDeNun$SITUACION == "p1")
+  }
+  if (pValue == "P2") {
+    sum1 <- sum1 + sum(indDeNun$SITUACION == "p2")
+  }
+  
+  return(sum + sum1 + sum2)
 }
 
 ##########################################
@@ -61,10 +72,34 @@ countTotalBugs <- function(dNo) {
   return(sum)
 }
 
+##########################################
+          # Date of Dununcia # 
+##########################################
+denunciaDate <- function(dNo, type) {
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
+  denun <- indDeNun[which(indDeNun$SITUACION == "D"),]
+  if (type == "DIA") {
+    DIA <- denun$DIA[[1]]
+    return(DIA)
+  }
+  if (type == "MES") {
+    MES <- denun$MES[[1]]
+    return(MES)
+  }
+  if (type == "ANIO") {
+    ANIO <- denun$ANIO[[1]]
+    return(ANIO)
+  }
+
+}
+
 ## loop through count function to create table of P1 and P2 per denunNo including inspCompleta
 valTable <- c()
 for (i in denunNo) { 
-  valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), countTotalBugs(i)))
+  valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), 
+                                countTotalBugs(i), denunciaDate(i, "DIA"),
+                                denunciaDate(i, "MES"), denunciaDate(i, "ANIO")))
 }
-colnames(valTable) <- c("NRO_DENUNCIA", "Total Bug Count", "P1", "P2")
+colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "Total Bug Count", "DIA",
+                        "MES", "ANIO")
 
