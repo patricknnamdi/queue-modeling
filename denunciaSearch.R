@@ -1,8 +1,10 @@
 ## This program finds the P1 and P2 for a given denuncia 
 ## dataset: inspecciones.csv and rociado.csv 
 
-## setwd
-setwd("/Users/patrickemedom/Desktop/Levy_lab/denuncia/")
+#set directory
+setwd("~/Documents/queue-modeling/")    #for Mike
+setwd("/Users/patrickemedom/Desktop/denuncia/")   #for Patrick
+
 inspecciones <- data.frame(read.csv("inspecciones - INSPECCIONES.csv"))
 inspecciones <- inspecciones[, c("UNICODE.", "SITUACION","NRO_DENUNCIA","DIA", "MES", "ANIO", "IN_TCAP_TOT", "PD_TCAP_TOT", "INSP_COMPLETA")]
 
@@ -22,7 +24,7 @@ indPos <- inspecciones[which(inspecciones$sumTotal != 0), ]
 #  inspecciones.date - P1 and P2 pos and non-pos (FALSE)
 ################################################
 
-if (FALSE) {
+if (TRUE) {
   ## Take starting at 2012 when P1 and P2 was utilized
   indPos <- indPos[which(indPos$ANIO >= 2012),]
   inspecciones.date <- indPos[which(indPos$ANIO >= 2012),]
@@ -84,6 +86,23 @@ countTotalBugs <- function(dNo) {
 }
 
 ##########################################
+      # Total Sum - countAllBugs #
+ # Max between D P1 P2 - countMaxBugs #
+##########################################
+countAllBugs <- function(dNo) {
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
+  sum <- sum(indDeNun$sumTotal)
+  return(sum)
+}
+
+countMaxBugs <- function(dNo) {
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
+  indDeNunMax <- colMax(indDeNun)
+  return(sum)
+}
+
+
+##########################################
           # Date of Dununcia # 
 ##########################################
 denunciaDate <- function(dNo, type) {
@@ -114,3 +133,4 @@ for (i in denunNo) {
 colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "Total Bug Count", "DIA",
                         "MES", "ANIO")
 valTable.df <- data.frame(valTable)
+print(valTable.df)
