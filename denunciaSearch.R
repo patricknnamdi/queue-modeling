@@ -2,7 +2,7 @@
 ## dataset: inspecciones.csv and rociado.csv 
 
 #set directory
-setwd("~/queue-modeling/")    #for Mike
+#setwd("~/Documents/queue-modeling/")    #for Mike
 setwd("/Users/patrickemedom/Desktop/denuncia/")   #for Patrick
 
 inspecciones <- data.frame(read.csv("inspecciones - INSPECCIONES.csv"))
