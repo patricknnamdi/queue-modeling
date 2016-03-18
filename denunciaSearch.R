@@ -16,11 +16,22 @@ inspecciones$sumTotal <- ifelse(is.na(inspecciones$sumTotal), 0, inspecciones$su
 ## replace $Situacion with only positive contents (sumtotal > 0)
 indPos <- inspecciones[which(inspecciones$sumTotal != 0), ]
 
-## Take starting at 2012 when P1 and P2 was utilized
-indPos <- indPos[which(indPos$ANIO >= 2012),]
+################################################
+#  Choose Dataset 
+#  indPos - P1 and P2 positive (TRUE)
+#  inspecciones.date - P1 and P2 pos and non-pos (FALSE)
+################################################
 
-## Subset larger dataset for when P1 and P2 notation was used
-inspecciones.date <- inspecciones[which(inspecciones$ANIO >= 2012),]
+if (FALSE) {
+  ## Take starting at 2012 when P1 and P2 was utilized
+  indPos <- indPos[which(indPos$ANIO >= 2012),]
+  inspecciones.date <- indPos[which(indPos$ANIO >= 2012),]
+  
+ } else {
+  ## Subset larger dataset for when P1 and P2 notation was used
+  indPos <- indPos[which(indPos$ANIO >= 2012),]
+  inspecciones.date <- inspecciones[which(inspecciones$ANIO >= 2012),]
+}
 
 ## Get positive denuncias where sumTotal != 0
 denunNo <- indPos$NRO_DENUNCIA[indPos$SITUACION == "D"]
@@ -90,16 +101,16 @@ denunciaDate <- function(dNo, type) {
     ANIO <- denun$ANIO[[1]]
     return(ANIO)
   }
-
 }
 
-## loop through count function to create table of P1 and P2 per denunNo including inspCompleta
+# loop through count function to create table of P1 and P2 per denunNo including inspCompleta
 valTable <- c()
 for (i in denunNo) { 
   valTable <- rbind(valTable, c(i, countPValue(i, "P1"), countPValue(i, "P2"), 
                                 countTotalBugs(i), denunciaDate(i, "DIA"),
                                 denunciaDate(i, "MES"), denunciaDate(i, "ANIO")))
 }
+
 colnames(valTable) <- c("NRO_DENUNCIA", "P1", "P2", "Total Bug Count", "DIA",
                         "MES", "ANIO")
-
+valTable.df <- data.frame(valTable)
