@@ -76,6 +76,17 @@ countCompleta <- function(dNo, inspCompleta) {
 }
 
 ##########################################
+            # sumTotal #
+    ##Total bugs from denuncia##
+##########################################
+countTotalBugs <- function(dNo) {
+  indDeNun <- inspecciones.date[which(inspecciones.date$NRO_DENUNCIA == dNo),]
+  denun <- indDeNun[which(indDeNun$SITUACION == "D"),]
+  sum <- sum(denun$sumTotal)
+  return(sum)
+}
+
+##########################################
       # Total Sum - countAllBugs #
  # Max between D P1 P2 - countMaxBugs #
 ##########################################
